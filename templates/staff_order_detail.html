@@ -1,0 +1,90 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Chi tiết đơn hàng{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">Chi tiết đơn</p>
+        <h2>Đơn #{{ order.OrderID }} - {{ order.TableName }}</h2>
+        <p class="section-copy">Xem danh sách món, ghi chú của khách và điều phối trạng thái xử lý của đơn hàng.</p>
+    </div>
+    <div class="actions">
+        <a class="btn btn-secondary" href="{{ url_for('staff_dashboard') }}">Về bảng điều phối</a>
+        {% if order.Status != 'Đã thanh toán' %}
+            <a class="btn btn-tertiary" href="{{ url_for('payment_page', table_id=order.TableID) }}">Mở thanh toán</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span class="stat-label">Trạng thái hiện tại</span>
+        <strong>{{ order.Status }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Thời gian đặt</span>
+        <strong>{{ order.OrderDate|datetime_vn }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Tổng tạm tính</span>
+        <strong>{{ order.TotalAmount|currency }}</strong>
+    </article>
+</section>
+
+<section class="panel-card">
+    <div class="panel-head">
+        <div>
+            <p class="section-kicker">Món trong đơn</p>
+            <h3>Danh sách món và ghi chú tùy chỉnh</h3>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Món</th>
+                    <th>Ghi chú</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item.ProductName }}</td>
+                        <td>{{ item.Note or "--" }}</td>
+                        <td>{{ item.Quantity }}</td>
+                        <td>{{ item.Price|currency }}</td>
+                        <td>{{ item.LineTotal|currency }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions actions-wrap">
+        {% if order.Status == 'Chờ xác nhận' %}
+            <form method="POST" action="{{ url_for('confirm_order', order_id=order.OrderID) }}">
+                <button class="btn btn-primary" type="submit">Xác nhận đơn hàng</button>
+            </form>
+        {% endif %}
+
+        {% if order.Status in ['Chờ xác nhận', 'Đang chế biến'] %}
+            <a class="btn btn-secondary" href="{{ url_for('edit_order', order_id=order.OrderID) }}">Sửa / Hủy đơn</a>
+        {% endif %}
+
+        {% if order.Status == 'Đang chế biến' %}
+            <form method="POST" action="{{ url_for('complete_order', order_id=order.OrderID) }}">
+                <button class="btn btn-tertiary" type="submit">Đánh dấu đã hoàn thành</button>
+            </form>
+        {% endif %}
+
+        {% if order.Status in ['Đang chế biến', 'Đã hoàn thành', 'Chờ xác nhận'] %}
+            <a class="btn btn-secondary" href="{{ url_for('payment_page', table_id=order.TableID) }}">Chuyển sang thanh toán</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

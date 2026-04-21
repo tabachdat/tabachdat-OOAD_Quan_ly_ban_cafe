@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu chế biến #{{ order.OrderID }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body class="print-page print-page-ticket">
+    <section class="ticket-sheet">
+        <header class="bill-header">
+            <p class="section-kicker">Phiếu chế biến</p>
+            <h1>{{ order.TableName }}</h1>
+            <span>Đơn #{{ order.OrderID }} - {{ order.OrderDate|datetime_vn }}</span>
+        </header>
+
+        <div class="ticket-list">
+            {% for item in items %}
+                <article class="ticket-item">
+                    <div>
+                        <strong>{{ item.ProductName }}</strong>
+                        <small>{{ item.Note or "Không có ghi chú" }}</small>
+                    </div>
+                    <span>x{{ item.Quantity }}</span>
+                </article>
+            {% endfor %}
+        </div>
+
+        <div class="actions bill-actions">
+            <button class="btn btn-primary" type="button" onclick="window.print()">In phiếu</button>
+            <a class="btn btn-secondary" href="{{ url_for('staff_order_detail', order_id=order.OrderID) }}">Quay lại đơn hàng</a>
+        </div>
+    </section>
+
+    {% if auto_print %}
+        <script>
+            window.addEventListener("load", function () {
+                window.print();
+            });
+        </script>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,17 @@
+<header class="topbar">
+    <div class="topbar-left">
+        <button class="sidebar-toggle" type="button" onclick="toggleSidebar()">Menu</button>
+        <div>
+            <p class="topbar-eyebrow">Cafe Management System</p>
+            <h1 class="topbar-title">Hệ thống quản lý quán cà phê</h1>
+        </div>
+    </div>
+
+    <div class="topbar-right">
+        <div class="account-chip">
+            <span>{{ session.get('full_name', 'Người dùng') }}</span>
+            <small>{{ session.get('role', '') }}</small>
+        </div>
+        <a class="ghost-link" href="{{ url_for('logout') }}">Đăng xuất</a>
+    </div>
+</header>

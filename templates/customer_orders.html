@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn của {{ table.TableName }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+</head>
+<body>
+    <main class="customer-shell customer-shell-narrow">
+        <section class="customer-panel">
+            <div class="page-mini-head">
+                <div>
+                    <p class="hero-kicker">Lịch sử đơn</p>
+                    <h1>{{ table.TableName }}</h1>
+                </div>
+                <a class="btn btn-secondary" href="{{ url_for('customer_menu', table_id=table.TableID) }}">Quay lại menu</a>
+            </div>
+
+            <div class="table-wrap table-wrap-light">
+                <table class="data-table data-table-light">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Thời gian</th>
+                            <th>Trạng thái</th>
+                            <th>Tổng tiền</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.OrderID }}</td>
+                                <td>{{ order.OrderDate|datetime_vn }}</td>
+                                <td>{{ order.Status }}</td>
+                                <td>{{ order.TotalAmount|currency }}</td>
+                                <td>
+                                    <a class="btn btn-dark btn-sm" href="{{ url_for('tracking', order_id=order.OrderID) }}">Theo dõi</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">Chưa có đơn nào được ghi nhận trên thiết bị này.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

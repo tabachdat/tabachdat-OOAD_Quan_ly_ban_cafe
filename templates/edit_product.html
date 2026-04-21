@@ -1,0 +1,67 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Chỉnh sửa món{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">Thực đơn</p>
+        <h2>Chỉnh sửa thông tin món</h2>
+        <p class="section-copy">Cập nhật lại giá, mô tả, hình ảnh và trạng thái phục vụ của món đang chọn.</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('admin_products') }}">Quay lại danh sách món</a>
+</section>
+
+<section class="panel-card panel-card-form">
+    <form method="POST" class="form-grid">
+        <label class="field field-span-2">
+            <span>Tên món</span>
+            <input type="text" name="name" value="{{ product.ProductName }}" required>
+        </label>
+
+        <label class="field">
+            <span>Đơn giá</span>
+            <input type="number" min="0" step="1000" name="price" value="{{ product.Price }}" required>
+        </label>
+
+        <label class="field">
+            <span>Danh mục</span>
+            <select name="category_id" required>
+                {% for category in categories %}
+                    <option value="{{ category.CategoryID }}" {% if category.CategoryID == product.CategoryID %}selected{% endif %}>
+                        {{ category.CategoryName }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="field">
+            <span>Ảnh minh họa</span>
+            <select name="image">
+                <option value="">Không dùng ảnh</option>
+                {% for image in image_options %}
+                    <option value="{{ image }}" {% if image == product.Image %}selected{% endif %}>{{ image }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="field">
+            <span>Trạng thái bán</span>
+            <div class="checkbox-card">
+                <input id="edit_is_available" type="checkbox" name="is_available" {% if product.Status %}checked{% endif %}>
+                <label for="edit_is_available">Đang kinh doanh</label>
+            </div>
+        </label>
+
+        <label class="field field-span-2">
+            <span>Mô tả</span>
+            <textarea name="description" rows="4">{{ product.Description or "" }}</textarea>
+        </label>
+
+        <div class="actions field-span-2">
+            <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+            <a class="btn btn-secondary" href="{{ url_for('admin_products') }}">Hủy</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

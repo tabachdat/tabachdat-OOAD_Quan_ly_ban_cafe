@@ -1,0 +1,137 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Quản lý thực đơn{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">UC6</p>
+        <h2>Quản lý thực đơn</h2>
+        <p class="section-copy">
+            Quản lý có thể thêm món mới, chỉnh sửa giá, mô tả, hình ảnh và cập nhật trạng thái còn/hết món để đồng bộ tức thời sang website khách hàng.
+        </p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('admin_dashboard') }}">Về tổng quan</a>
+</section>
+
+<section class="split-layout">
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Thêm món mới</p>
+                <h3>Cập nhật menu quán</h3>
+            </div>
+        </div>
+
+        <form method="POST" class="form-grid">
+            <label class="field field-span-2">
+                <span>Tên món</span>
+                <input type="text" name="name" placeholder="Ví dụ: Cà phê sữa đá" required>
+            </label>
+
+            <label class="field">
+                <span>Đơn giá</span>
+                <input type="number" min="0" step="1000" name="price" placeholder="45000" required>
+            </label>
+
+            <label class="field">
+                <span>Danh mục</span>
+                <select name="category_id" required>
+                    <option value="">Chọn danh mục</option>
+                    {% for category in categories %}
+                        <option value="{{ category.CategoryID }}">{{ category.CategoryName }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="field">
+                <span>Ảnh minh họa</span>
+                <select name="image">
+                    <option value="">Chọn ảnh có sẵn</option>
+                    {% for image in image_options %}
+                        <option value="{{ image }}">{{ image }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="field">
+                <span>Trạng thái bán</span>
+                <div class="checkbox-card">
+                    <input id="is_available" type="checkbox" name="is_available" checked>
+                    <label for="is_available">Đang kinh doanh</label>
+                </div>
+            </label>
+
+            <label class="field field-span-2">
+                <span>Mô tả ngắn</span>
+                <textarea name="description" rows="4" placeholder="Mô tả hương vị hoặc điểm nổi bật của món"></textarea>
+            </label>
+
+            <button class="btn btn-primary field-span-2" type="submit">Lưu món mới</button>
+        </form>
+    </article>
+
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Danh sách món</p>
+                <h3>Toàn bộ sản phẩm trong hệ thống</h3>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table data-table-compact">
+                <thead>
+                    <tr>
+                        <th>Món</th>
+                        <th>Danh mục</th>
+                        <th>Giá</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>
+                                <div class="table-media">
+                                    {% if product.Image %}
+                                        <img src="{{ url_for('static', filename='images/products/' ~ product.Image) }}" alt="{{ product.ProductName }}">
+                                    {% else %}
+                                        <div class="table-media-placeholder">No image</div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ product.ProductName }}</strong>
+                                        <small>{{ product.Description or "Chưa có mô tả" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ product.CategoryName or "Chưa phân loại" }}</td>
+                            <td>{{ product.Price|currency }}</td>
+                            <td>
+                                <span class="badge {% if product.Status %}badge-success{% else %}badge-muted{% endif %}">
+                                    {% if product.Status %}Còn món{% else %}Hết món{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn btn-secondary btn-sm" href="{{ url_for('edit_product', product_id=product.ProductID) }}">Sửa</a>
+                                    <form method="POST" action="{{ url_for('toggle_product_status', product_id=product.ProductID) }}">
+                                        <button class="btn btn-tertiary btn-sm" type="submit">
+                                            {% if product.Status %}Đánh dấu hết món{% else %}Mở bán lại{% endif %}
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">Chưa có món nào trong thực đơn.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

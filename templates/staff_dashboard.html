@@ -1,0 +1,168 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Bảng điều phối nhân viên{% endblock %}
+
+{% block extra_js %}
+<script>
+    setTimeout(function () {
+        if (!document.hidden) {
+            window.location.reload();
+        }
+    }, 4000);
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">UC3 / UC4 / UC5</p>
+        <h2>Bảng điều phối nhân viên</h2>
+        <p class="section-copy">
+            Theo dõi trạng thái bàn, tiếp nhận đơn mới từ khách hàng, xử lý yêu cầu hỗ trợ và điều phối thanh toán trên cùng một màn hình.
+        </p>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span class="stat-label">Đơn chờ xác nhận</span>
+        <strong>{{ stats.pending }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Đơn đang chế biến</span>
+        <strong>{{ stats.processing }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Đơn đã hoàn thành</span>
+        <strong>{{ stats.completed }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Bàn đang phục vụ</span>
+        <strong>{{ stats.active_tables }}</strong>
+    </article>
+</section>
+
+<section class="card-grid">
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Trạng thái bàn</p>
+                <h3>Tổng quan các bàn trong quán</h3>
+            </div>
+        </div>
+
+        <div class="table-grid">
+            {% for table in tables %}
+                <article class="table-card {% if table.Status == 'Đang dùng' %}table-card-busy{% endif %}">
+                    <div class="table-card-head">
+                        <strong>{{ table.TableName }}</strong>
+                        <span class="badge {% if table.Status == 'Đang dùng' %}badge-warning{% else %}badge-success{% endif %}">
+                            {{ table.Status }}
+                        </span>
+                    </div>
+
+                    <p class="table-card-text">
+                        {% if table.OrderID %}
+                            Đơn hiện tại: #{{ table.OrderID }}<br>
+                            Trạng thái: {{ table.OrderStatus }}<br>
+                            Tạm tính: {{ table.TotalAmount|currency }}
+                        {% else %}
+                            Chưa có đơn hoạt động.
+                        {% endif %}
+                    </p>
+
+                    <div class="actions">
+                        {% if table.OrderID %}
+                            <a class="btn btn-secondary btn-sm" href="{{ url_for('staff_order_detail', order_id=table.OrderID) }}">Xem đơn</a>
+                            <a class="btn btn-primary btn-sm" href="{{ url_for('payment_page', table_id=table.TableID) }}">Thanh toán</a>
+                        {% endif %}
+                    </div>
+
+                    {% if table.NotifyCount %}
+                        <span class="table-notify">{{ table.NotifyCount }} thông báo chờ xử lý</span>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Thông báo</p>
+                <h3>Yêu cầu mới từ khách hàng</h3>
+            </div>
+        </div>
+
+        <div class="notification-list">
+            {% for notification in notifications %}
+                <article class="notification-item">
+                    <div>
+                        <strong>{{ notification.Label }}</strong>
+                        <small>{{ notification.CreatedAt|datetime_vn }}</small>
+                    </div>
+                    <form method="POST" action="{{ url_for('resolve_notification', notify_id=notification.NotifyID) }}">
+                        <button class="btn btn-tertiary btn-sm" type="submit">
+                            {% if notification.Kind == 'PAYMENT' %}Mở thanh toán{% else %}Đánh dấu đã xử lý{% endif %}
+                        </button>
+                    </form>
+                </article>
+            {% else %}
+                <p class="empty-state">Hiện chưa có yêu cầu hỗ trợ hoặc thanh toán nào.</p>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+
+<section class="panel-card">
+    <div class="panel-head">
+        <div>
+            <p class="section-kicker">Danh sách đơn</p>
+            <h3>Đơn hàng đang hoạt động</h3>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Bàn</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th>Số lượng món</th>
+                    <th>Tạm tính</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.OrderID }}</td>
+                        <td>{{ order.TableName }}</td>
+                        <td>{{ order.OrderDate|datetime_vn }}</td>
+                        <td>
+                            <span class="badge
+                                {% if order.Status == 'Chờ xác nhận' %}badge-warning
+                                {% elif order.Status == 'Đang chế biến' %}badge-info
+                                {% elif order.Status == 'Đã hoàn thành' %}badge-success
+                                {% else %}badge-muted{% endif %}">
+                                {{ order.Status }}
+                            </span>
+                        </td>
+                        <td>{{ order.TotalItems or 0 }}</td>
+                        <td>{{ order.TotalAmount|currency }}</td>
+                        <td>
+                            <a class="btn btn-secondary btn-sm" href="{{ url_for('staff_order_detail', order_id=order.OrderID) }}">Chi tiết</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">Không có đơn hàng nào đang hoạt động.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

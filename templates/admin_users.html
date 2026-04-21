@@ -1,0 +1,102 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Quản lý tài khoản{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">UC7</p>
+        <h2>Quản lý tài khoản nhân viên</h2>
+        <p class="section-copy">
+            Tạo tài khoản mới, cập nhật thông tin nhân sự và khóa/mở quyền đăng nhập cho nhân viên.
+        </p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('admin_dashboard') }}">Về tổng quan</a>
+</section>
+
+<section class="split-layout">
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Cấp tài khoản</p>
+                <h3>Tạo nhân viên mới</h3>
+            </div>
+        </div>
+
+        <form method="POST" class="form-grid">
+            <label class="field">
+                <span>Tên đăng nhập</span>
+                <input type="text" name="username" placeholder="nhanvien01" required>
+            </label>
+
+            <label class="field">
+                <span>Mật khẩu ban đầu</span>
+                <input type="password" name="password" placeholder="Nhập mật khẩu" required>
+            </label>
+
+            <label class="field field-span-2">
+                <span>Họ và tên</span>
+                <input type="text" name="full_name" placeholder="Nguyễn Văn A" required>
+            </label>
+
+            <label class="field field-span-2">
+                <span>Số điện thoại</span>
+                <input type="text" name="phone" placeholder="0987 654 321">
+            </label>
+
+            <button class="btn btn-primary field-span-2" type="submit">Tạo tài khoản</button>
+        </form>
+    </article>
+
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Danh sách tài khoản</p>
+                <h3>Nhân viên đang có trong hệ thống</h3>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tài khoản</th>
+                        <th>Họ tên</th>
+                        <th>Số điện thoại</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.Username }}</td>
+                            <td>{{ user.FullName }}</td>
+                            <td>{{ user.Phone or "--" }}</td>
+                            <td>
+                                <span class="badge {% if user.Status %}badge-success{% else %}badge-muted{% endif %}">
+                                    {% if user.Status %}Đang hoạt động{% else %}Đang khóa{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn btn-secondary btn-sm" href="{{ url_for('edit_user', user_id=user.UserID) }}">Sửa</a>
+                                    <form method="POST" action="{{ url_for('toggle_user_status', user_id=user.UserID) }}">
+                                        <button class="btn btn-tertiary btn-sm" type="submit">
+                                            {% if user.Status %}Khóa{% else %}Mở khóa{% endif %}
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">Chưa có tài khoản nhân viên nào.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

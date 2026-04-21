@@ -1,0 +1,94 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Thanh toán{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">UC5</p>
+        <h2>Thanh toán cho {{ table.TableName }}</h2>
+        <p class="section-copy">Tổng hợp toàn bộ món của bàn, áp dụng mã giảm giá hợp lệ và xác nhận phương thức thanh toán trước khi in hóa đơn.</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('staff_dashboard') }}">Quay lại bảng điều phối</a>
+</section>
+
+<section class="split-layout">
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Tạm tính hóa đơn</p>
+                <h3>Danh sách món đã gọi</h3>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Món</th>
+                        <th>Ghi chú</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item.ProductName }}</td>
+                            <td>{{ item.Note or "--" }}</td>
+                            <td>{{ item.Quantity }}</td>
+                            <td>{{ item.Price|currency }}</td>
+                            <td>{{ item.LineTotal|currency }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Thông tin thanh toán</p>
+                <h3>Xác nhận giao dịch</h3>
+            </div>
+        </div>
+
+        <form method="POST" class="form-grid">
+            <label class="field field-span-2">
+                <span>Mã giảm giá</span>
+                <input type="text" name="discount_code" value="{{ discount_code }}" placeholder="GIAM10 / SALE20 / VIP15">
+                {% if discount_code %}
+                    <small class="{% if valid_discount %}hint-success{% else %}hint-error{% endif %}">
+                        {% if valid_discount %}
+                            Mã hợp lệ. Hệ thống đã tính lại số tiền cần thanh toán.
+                        {% else %}
+                            Mã không hợp lệ, hóa đơn sẽ giữ nguyên giá gốc.
+                        {% endif %}
+                    </small>
+                {% endif %}
+            </label>
+
+            <label class="field field-span-2">
+                <span>Phương thức thanh toán</span>
+                <select name="payment_method">
+                    <option value="Tiền mặt" {% if payment_method == 'Tiền mặt' %}selected{% endif %}>Tiền mặt</option>
+                    <option value="Chuyển khoản" {% if payment_method == 'Chuyển khoản' %}selected{% endif %}>Chuyển khoản</option>
+                </select>
+            </label>
+
+            <div class="invoice-summary field-span-2">
+                <div><span>Tạm tính</span><strong>{{ subtotal|currency }}</strong></div>
+                <div><span>Giảm giá</span><strong>{{ discount_value|currency }}</strong></div>
+                <div class="invoice-summary-total"><span>Khách cần trả</span><strong>{{ final_total|currency }}</strong></div>
+            </div>
+
+            <div class="actions field-span-2">
+                <button class="btn btn-secondary" type="submit" name="action" value="preview">Xem lại số tiền</button>
+                <button class="btn btn-primary" type="submit" name="action" value="confirm">Xác nhận thanh toán</button>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

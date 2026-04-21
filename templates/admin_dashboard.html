@@ -1,0 +1,101 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Tổng quan quản lý{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">Dashboard</p>
+        <h2>Tổng quan vận hành quán</h2>
+        <p class="section-copy">
+            Theo dõi nhanh số món đang kinh doanh, số tài khoản nhân viên, đơn đang xử lý và doanh thu trong ngày.
+        </p>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span class="stat-label">Sản phẩm trong menu</span>
+        <strong>{{ stats.ProductCount or 0 }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Nhân viên được cấp quyền</span>
+        <strong>{{ stats.StaffCount or 0 }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Đơn đang hoạt động</span>
+        <strong>{{ stats.ActiveOrders or 0 }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Doanh thu hôm nay</span>
+        <strong>{{ stats.TodayRevenue|currency }}</strong>
+    </article>
+</section>
+
+<section class="card-grid">
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Quản lý thực đơn</p>
+                <h3>Thêm món mới hoặc cập nhật trạng thái còn/hết món</h3>
+            </div>
+            <a class="btn btn-primary" href="{{ url_for('admin_products') }}">Mở trang thực đơn</a>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tên món</th>
+                        <th>Danh mục</th>
+                        <th>Đơn giá</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in recent_products %}
+                        <tr>
+                            <td>{{ product.ProductName }}</td>
+                            <td>{{ product.CategoryName or "Chưa phân loại" }}</td>
+                            <td>{{ product.Price|currency }}</td>
+                            <td>
+                                <span class="badge {% if product.Status %}badge-success{% else %}badge-muted{% endif %}">
+                                    {% if product.Status %}Còn món{% else %}Tạm ngưng{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4">Chưa có dữ liệu thực đơn.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel-card panel-card-accent">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Điều hướng nhanh</p>
+                <h3>Đi tới các chức năng quản trị chính</h3>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <a class="quick-link" href="{{ url_for('admin_products') }}">
+                <strong>Thực đơn</strong>
+                <span>Thêm món, sửa giá, đổi trạng thái kinh doanh</span>
+            </a>
+            <a class="quick-link" href="{{ url_for('admin_users') }}">
+                <strong>Tài khoản nhân viên</strong>
+                <span>Tạo tài khoản, đổi thông tin và khóa/mở quyền truy cập</span>
+            </a>
+            <a class="quick-link" href="{{ url_for('admin_report') }}">
+                <strong>Báo cáo doanh thu</strong>
+                <span>Lọc theo ngày/tháng/năm và xuất file Excel</span>
+            </a>
+        </div>
+    </article>
+</section>
+{% endblock %}

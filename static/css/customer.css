@@ -1,0 +1,459 @@
+:root {
+    --cream: #f7f0e7;
+    --cream-soft: #fffaf4;
+    --brown: #4b3326;
+    --brown-soft: #6d584c;
+    --latte: #d8b497;
+    --latte-deep: #ba7c4f;
+    --line: rgba(75, 51, 38, 0.14);
+    --card: rgba(255, 251, 247, 0.94);
+    --shadow: 0 24px 60px rgba(75, 51, 38, 0.14);
+    --success: #2f7a5d;
+    --danger: #b8473d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--brown);
+    background:
+        radial-gradient(circle at top right, rgba(216, 180, 151, 0.28), transparent 28%),
+        radial-gradient(circle at left bottom, rgba(186, 124, 79, 0.18), transparent 30%),
+        linear-gradient(180deg, #fbf5ee 0%, #f4ece1 100%);
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+.customer-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 28px clamp(18px, 5vw, 42px);
+    color: #fff8f2;
+    background:
+        radial-gradient(circle at top left, rgba(255, 246, 238, 0.16), transparent 26%),
+        linear-gradient(150deg, #3b281d 0%, #5d402d 55%, #8b5c3c 100%);
+}
+
+.customer-hero-main h1,
+.customer-panel h1 {
+    margin: 0 0 10px;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-family: "Palatino Linotype", "Book Antiqua", serif;
+}
+
+.customer-hero-main p {
+    margin: 0;
+    max-width: 720px;
+    line-height: 1.8;
+    color: rgba(255, 247, 240, 0.78);
+}
+
+.hero-kicker {
+    margin: 0 0 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.74rem;
+    color: rgba(255, 247, 240, 0.72);
+}
+
+.hero-status {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-status span {
+    color: rgba(255, 247, 240, 0.7);
+}
+
+.customer-hero-actions,
+.customer-inline-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hero-link,
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 13px 18px;
+    font-weight: 600;
+    border: 0;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.hero-link {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fffaf5;
+}
+
+.hero-link:hover,
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--latte-deep), #d18f5a);
+    color: #fff;
+}
+
+.btn-secondary {
+    background: rgba(75, 51, 38, 0.1);
+    color: var(--brown);
+}
+
+.btn-tertiary {
+    background: rgba(47, 122, 93, 0.12);
+    color: var(--success);
+}
+
+.btn-dark {
+    background: var(--brown);
+    color: #fff7ef;
+}
+
+.btn-sm {
+    padding: 9px 14px;
+    font-size: 0.88rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.customer-shell {
+    width: min(1360px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 24px 0 32px;
+}
+
+.customer-shell-narrow {
+    width: min(980px, calc(100% - 32px));
+}
+
+.customer-toolbar,
+.customer-panel,
+.cart-card,
+.cart-summary-card,
+.empty-card,
+.tracking-card {
+    background: var(--card);
+    border-radius: 26px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.customer-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.customer-filter {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr auto;
+    gap: 12px;
+}
+
+.customer-filter input,
+.customer-filter select,
+.menu-form input,
+.menu-form select,
+.menu-form textarea,
+.voucher-form input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(75, 51, 38, 0.16);
+    background: rgba(255, 255, 255, 0.9);
+    outline: none;
+}
+
+.menu-form textarea {
+    resize: vertical;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+}
+
+.empty-card {
+    padding: 28px;
+    border-radius: 26px;
+    border: 1px dashed var(--line);
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.menu-card {
+    overflow: hidden;
+    border-radius: 26px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.menu-card-muted {
+    opacity: 0.82;
+}
+
+.menu-card-media {
+    position: relative;
+    height: 220px;
+    background: #eadfd3;
+}
+
+.menu-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.menu-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--brown-soft);
+}
+
+.sold-out-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(184, 71, 61, 0.92);
+    color: #fff;
+    font-size: 0.86rem;
+}
+
+.menu-card-body {
+    padding: 20px;
+}
+
+.menu-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+}
+
+.menu-card-head small {
+    display: block;
+    color: var(--brown-soft);
+    margin-bottom: 6px;
+}
+
+.menu-card-head h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-family: "Palatino Linotype", "Book Antiqua", serif;
+}
+
+.menu-card-head strong {
+    white-space: nowrap;
+}
+
+.menu-description {
+    margin: 12px 0 18px;
+    color: var(--brown-soft);
+    line-height: 1.7;
+}
+
+.menu-form {
+    display: grid;
+    gap: 12px;
+}
+
+.menu-form-inline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.field {
+    display: grid;
+    gap: 8px;
+}
+
+.field span {
+    color: var(--brown-soft);
+    font-size: 0.94rem;
+}
+
+.customer-panel {
+    padding: 24px;
+}
+
+.page-mini-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 22px;
+}
+
+.page-mini-head p {
+    color: var(--brown-soft);
+    margin: 0;
+}
+
+.table-wrap-light {
+    overflow: auto;
+}
+
+.data-table-light {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 660px;
+}
+
+.data-table-light th,
+.data-table-light td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+}
+
+.data-table-light thead th {
+    color: var(--brown-soft);
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.tracking-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+}
+
+.tracking-status span,
+.tracking-total span {
+    display: block;
+    color: var(--brown-soft);
+    margin-bottom: 6px;
+}
+
+.tracking-status strong,
+.tracking-total strong {
+    font-size: 1.3rem;
+    font-family: "Palatino Linotype", "Book Antiqua", serif;
+}
+
+.tracking-steps {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.tracking-step {
+    padding: 16px 18px;
+    border-radius: 20px;
+    border: 1px dashed rgba(75, 51, 38, 0.18);
+    color: var(--brown-soft);
+}
+
+.tracking-step.active {
+    background: rgba(186, 124, 79, 0.1);
+    border-style: solid;
+    color: var(--brown);
+}
+
+.tracking-step strong,
+.tracking-step span {
+    display: block;
+}
+
+.tracking-step span {
+    margin-top: 6px;
+    line-height: 1.7;
+}
+
+.toast-stack {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    display: grid;
+    gap: 10px;
+    z-index: 50;
+}
+
+.toast {
+    padding: 14px 16px;
+    border-radius: 18px;
+    color: #fff;
+    box-shadow: var(--shadow);
+}
+
+.toast-success {
+    background: rgba(47, 122, 93, 0.94);
+}
+
+.toast-error {
+    background: rgba(184, 71, 61, 0.94);
+}
+
+@media (max-width: 980px) {
+    .customer-hero,
+    .customer-toolbar,
+    .page-mini-head,
+    .tracking-card {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .customer-filter,
+    .menu-form-inline {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .customer-shell,
+    .customer-shell-narrow {
+        width: calc(100% - 22px);
+    }
+
+    .toast-stack {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+    }
+}

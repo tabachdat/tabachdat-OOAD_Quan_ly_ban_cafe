@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng {{ table.TableName }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+</head>
+<body>
+    <main class="cart-shell">
+        <section class="cart-page-head">
+            <div>
+                <p class="hero-kicker">Bước 2 / 3</p>
+                <h1>Giỏ hàng của {{ table.TableName }}</h1>
+                <p>Kiểm tra lại số lượng, ghi chú tùy chỉnh và áp mã giảm giá trước khi gửi đơn.</p>
+            </div>
+            <a class="btn btn-secondary" href="{{ url_for('customer_menu', table_id=table.TableID) }}">Tiếp tục chọn món</a>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="toast-stack">
+                    {% for category, message in messages %}
+                        <div class="toast toast-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if cart_info['items'] %}
+            <section class="cart-layout">
+                <article class="cart-card">
+                    <div class="cart-list">
+                        {% for item in cart_info['items'] %}
+                            <article class="cart-item">
+                                <img src="{{ url_for('static', filename='images/products/' ~ item.image) }}" alt="{{ item.name }}">
+                                <div class="cart-item-body">
+                                    <div class="cart-item-head">
+                                        <div>
+                                            <h3>{{ item.name }}</h3>
+                                            <p>{{ item.note or "Không có ghi chú riêng" }}</p>
+                                        </div>
+                                        <strong>{{ item.line_total|currency }}</strong>
+                                    </div>
+
+                                    <div class="cart-item-foot">
+                                        <span>{{ item.price|currency }} / món</span>
+                                        <div class="qty-switcher">
+                                            <a href="{{ url_for('update_cart_item', item_key=item.key, action='decrease') }}">-</a>
+                                            <strong>{{ item.quantity }}</strong>
+                                            <a href="{{ url_for('update_cart_item', item_key=item.key, action='increase') }}">+</a>
+                                        </div>
+                                        <a class="remove-link" href="{{ url_for('update_cart_item', item_key=item.key, action='remove') }}">Xóa món</a>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </article>
+
+                <aside class="cart-summary-card">
+                    <form class="voucher-form" method="POST" action="{{ url_for('apply_voucher') }}">
+                        <label class="field">
+                            <span>Mã giảm giá</span>
+                            <input type="text" name="voucher" value="{{ cart_info['discount_code'] }}" placeholder="Nhập GIAM10, SALE20...">
+                        </label>
+                        <button class="btn btn-secondary" type="submit">Áp dụng</button>
+                    </form>
+
+                    <div class="cart-summary">
+                        <div><span>Tạm tính</span><strong>{{ cart_info['subtotal']|currency }}</strong></div>
+                        <div><span>Giảm giá</span><strong>{{ cart_info['discount_value']|currency }}</strong></div>
+                        <div class="cart-summary-total"><span>Cần thanh toán</span><strong>{{ cart_info['final_total']|currency }}</strong></div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('checkout') }}">
+                        <button class="btn btn-primary btn-block" type="submit">Gửi đơn hàng</button>
+                    </form>
+
+                    <div class="cart-side-actions">
+                        <form method="POST" action="{{ url_for('customer_request') }}">
+                            <input type="hidden" name="table_id" value="{{ table.TableID }}">
+                            <input type="hidden" name="action" value="support">
+                            <input type="hidden" name="redirect_to" value="{{ url_for('cart') }}">
+                            <button class="btn btn-tertiary btn-block" type="submit">Gọi nhân viên hỗ trợ</button>
+                        </form>
+                    </div>
+                </aside>
+            </section>
+        {% else %}
+            <section class="empty-cart-card">
+                <h2>Giỏ hàng đang trống</h2>
+                <p>Hãy quay lại menu để chọn món rồi gửi đơn.</p>
+                <a class="btn btn-primary" href="{{ url_for('customer_menu', table_id=table.TableID) }}">Quay lại menu</a>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>

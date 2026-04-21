@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa đơn #{{ order.OrderID }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body class="print-page">
+    <section class="bill-sheet">
+        <header class="bill-header">
+            <p class="section-kicker">Cafe Management</p>
+            <h1>Hóa đơn thanh toán</h1>
+            <span>{{ table.TableName }} - Đơn #{{ order.OrderID }}</span>
+        </header>
+
+        <section class="bill-meta">
+            <div>
+                <strong>Thời gian thanh toán</strong>
+                <span>
+                    {% if payment %}
+                        {{ payment.PaymentDate|datetime_vn }}
+                    {% else %}
+                        {{ order.OrderDate|datetime_vn }}
+                    {% endif %}
+                </span>
+            </div>
+            <div>
+                <strong>Phương thức</strong>
+                <span>{{ payment.Method if payment else "Tiền mặt" }}</span>
+            </div>
+            <div>
+                <strong>Trạng thái</strong>
+                <span>{{ order.Status }}</span>
+            </div>
+        </section>
+
+        <table class="bill-table">
+            <thead>
+                <tr>
+                    <th>Món</th>
+                    <th>SL</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.ProductName }}</strong>
+                            <small>{{ item.Note or "Không có ghi chú" }}</small>
+                        </td>
+                        <td>{{ item.Quantity }}</td>
+                        <td>{{ item.Price|currency }}</td>
+                        <td>{{ item.LineTotal|currency }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <section class="bill-summary">
+            <div><span>Tạm tính</span><strong>{{ subtotal|currency }}</strong></div>
+            <div><span>Mã giảm giá</span><strong>{{ discount_code or "Không áp dụng" }}</strong></div>
+            <div><span>Giảm giá</span><strong>{{ discount_value|currency }}</strong></div>
+            <div class="bill-summary-total"><span>Tổng thanh toán</span><strong>{{ final_total|currency }}</strong></div>
+        </section>
+
+        <footer class="bill-footer">
+            <p>Cảm ơn quý khách đã ghé quán. Hẹn gặp lại!</p>
+        </footer>
+
+        <div class="actions bill-actions">
+            <button class="btn btn-primary" type="button" onclick="window.print()">In hóa đơn</button>
+            <a class="btn btn-secondary" href="{{ url_for('staff_dashboard') }}">Về bảng điều phối</a>
+        </div>
+    </section>
+
+    {% if auto_print %}
+        <script>
+            window.addEventListener("load", function () {
+                window.print();
+            });
+        </script>
+    {% endif %}
+</body>
+</html>

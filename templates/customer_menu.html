@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu {{ table.TableName }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+</head>
+<body>
+    <header class="customer-hero">
+        <div class="customer-hero-main">
+            <p class="hero-kicker">Gọi món theo QR</p>
+            <h1>{{ table.TableName }}</h1>
+            <p>Chọn món, thêm ghi chú riêng và gửi đơn trực tiếp tới quầy trong tối đa 3 bước.</p>
+
+            {% if active_order %}
+                <div class="hero-status">
+                    <span>Đơn đang hoạt động</span>
+                    <strong>#{{ active_order.OrderID }} - {{ active_order.Status }}</strong>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="customer-hero-actions">
+            <a class="hero-link" href="{{ url_for('cart') }}">Giỏ hàng ({{ cart_info['items']|length }})</a>
+            <a class="hero-link" href="{{ url_for('my_orders', table_id=table.TableID) }}">Đơn của bàn</a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="toast-stack">
+                {% for category, message in messages %}
+                    <div class="toast toast-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="customer-shell">
+        <section class="customer-toolbar">
+            <form method="GET" class="customer-filter">
+                <input type="text" name="keyword" placeholder="Tìm món..." value="{{ keyword }}">
+                <select name="category_id">
+                    <option value="">Tất cả danh mục</option>
+                    {% for category in categories %}
+                        <option value="{{ category.CategoryID }}" {% if selected_category|int == category.CategoryID %}selected{% endif %}>
+                            {{ category.CategoryName }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-dark" type="submit">Lọc menu</button>
+            </form>
+
+            <div class="customer-inline-actions">
+                <form method="POST" action="{{ url_for('customer_request') }}">
+                    <input type="hidden" name="table_id" value="{{ table.TableID }}">
+                    <input type="hidden" name="action" value="support">
+                    <input type="hidden" name="redirect_to" value="{{ request.full_path if request.query_string else request.path }}">
+                    <button class="btn btn-secondary" type="submit">Yêu cầu hỗ trợ</button>
+                </form>
+                <form method="POST" action="{{ url_for('customer_request') }}">
+                    <input type="hidden" name="table_id" value="{{ table.TableID }}">
+                    <input type="hidden" name="action" value="payment">
+                    <input type="hidden" name="redirect_to" value="{{ request.full_path if request.query_string else request.path }}">
+                    <button class="btn btn-primary" type="submit">Yêu cầu thanh toán</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="menu-grid">
+            {% for product in products %}
+                <article class="menu-card {% if not product.Status %}menu-card-muted{% endif %}">
+                    <div class="menu-card-media">
+                        {% if product.Image %}
+                            <img src="{{ url_for('static', filename='images/products/' ~ product.Image) }}" alt="{{ product.ProductName }}">
+                        {% else %}
+                            <div class="menu-card-placeholder">No image</div>
+                        {% endif %}
+
+                        {% if not product.Status %}
+                            <span class="sold-out-badge">Tạm hết món</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="menu-card-body">
+                        <div class="menu-card-head">
+                            <div>
+                                <small>{{ product.CategoryName or "Chưa phân loại" }}</small>
+                                <h3>{{ product.ProductName }}</h3>
+                            </div>
+                            <strong>{{ product.Price|currency }}</strong>
+                        </div>
+
+                        <p class="menu-description">{{ product.Description or "Chưa có mô tả cho món này." }}</p>
+
+                        <form method="POST" action="{{ url_for('add_to_cart') }}" class="menu-form">
+                            <input type="hidden" name="table_id" value="{{ table.TableID }}">
+                            <input type="hidden" name="product_id" value="{{ product.ProductID }}">
+
+                            <label class="field">
+                                <span>Số lượng</span>
+                                <input type="number" min="1" name="quantity" value="1" {% if not product.Status %}disabled{% endif %}>
+                            </label>
+
+                            <div class="menu-form-inline">
+                                <label class="field">
+                                    <span>Đường</span>
+                                    <select name="sugar_level" {% if not product.Status %}disabled{% endif %}>
+                                        {% for option in sugar_options %}
+                                            <option value="{{ option }}">{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+
+                                <label class="field">
+                                    <span>Đá</span>
+                                    <select name="ice_level" {% if not product.Status %}disabled{% endif %}>
+                                        {% for option in ice_options %}
+                                            <option value="{{ option }}">{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </div>
+
+                            <label class="field">
+                                <span>Ghi chú thêm</span>
+                                <textarea name="custom_note" rows="2" placeholder="Ví dụ: ít sữa, thêm đá viên..." {% if not product.Status %}disabled{% endif %}></textarea>
+                            </label>
+
+                            <button class="btn btn-primary" type="submit" {% if not product.Status %}disabled{% endif %}>Thêm vào giỏ</button>
+                        </form>
+                    </div>
+                </article>
+            {% else %}
+                <article class="empty-card">
+                    <h3>Không tìm thấy món phù hợp</h3>
+                    <p>Hãy thử đổi từ khóa tìm kiếm hoặc chọn danh mục khác.</p>
+                </article>
+            {% endfor %}
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

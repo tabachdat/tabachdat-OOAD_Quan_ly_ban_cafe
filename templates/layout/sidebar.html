@@ -1,0 +1,18 @@
+<aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('admin_dashboard' if session.get('role') == 'Admin' else 'staff_dashboard') }}">
+        <span class="brand-mark">CM</span>
+        <div>
+            <strong>Cafe Management</strong>
+            <small>POS web-based</small>
+        </div>
+    </a>
+
+    <nav class="sidebar-nav">
+        {% for link in nav_links %}
+            {% set target = url_for(link.endpoint) %}
+            <a class="sidebar-link {% if request.path == target %}active{% endif %}" href="{{ target }}">
+                {{ link.label }}
+            </a>
+        {% endfor %}
+    </nav>
+</aside>

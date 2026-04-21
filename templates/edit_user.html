@@ -1,0 +1,43 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Sửa tài khoản nhân viên{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">Tài khoản</p>
+        <h2>Chỉnh sửa nhân viên</h2>
+        <p class="section-copy">Cập nhật tên đăng nhập, thông tin liên hệ và đặt lại mật khẩu khi cần.</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('admin_users') }}">Quay lại danh sách</a>
+</section>
+
+<section class="panel-card panel-card-form">
+    <form method="POST" class="form-grid">
+        <label class="field">
+            <span>Tên đăng nhập</span>
+            <input type="text" name="username" value="{{ user.Username }}" required>
+        </label>
+
+        <label class="field">
+            <span>Mật khẩu mới</span>
+            <input type="password" name="password" placeholder="Bỏ trống nếu không đổi">
+        </label>
+
+        <label class="field field-span-2">
+            <span>Họ và tên</span>
+            <input type="text" name="full_name" value="{{ user.FullName }}" required>
+        </label>
+
+        <label class="field field-span-2">
+            <span>Số điện thoại</span>
+            <input type="text" name="phone" value="{{ user.Phone or '' }}">
+        </label>
+
+        <div class="actions field-span-2">
+            <button class="btn btn-primary" type="submit">Lưu cập nhật</button>
+            <a class="btn btn-secondary" href="{{ url_for('admin_users') }}">Hủy</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

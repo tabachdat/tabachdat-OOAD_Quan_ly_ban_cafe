@@ -1,0 +1,123 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Báo cáo doanh thu{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">UC8</p>
+        <h2>Báo cáo doanh thu</h2>
+        <p class="section-copy">
+            Thống kê doanh thu theo thời gian, theo dõi số giao dịch đã thanh toán và xác định các món bán chạy để tối ưu menu.
+        </p>
+    </div>
+    <div class="actions">
+        <a class="btn btn-secondary" href="{{ url_for('admin_dashboard') }}">Về tổng quan</a>
+        <a class="btn btn-primary" href="{{ url_for('export_report_excel', start_date=filters.start_date.isoformat(), end_date=filters.end_date.isoformat(), group_by=filters.group_by) }}">
+            Xuất Excel
+        </a>
+    </div>
+</section>
+
+<section class="panel-card">
+    <form method="GET" class="filter-bar">
+        <label class="field">
+            <span>Từ ngày</span>
+            <input type="date" name="start_date" value="{{ filters.start_date.isoformat() }}">
+        </label>
+        <label class="field">
+            <span>Đến ngày</span>
+            <input type="date" name="end_date" value="{{ filters.end_date.isoformat() }}">
+        </label>
+        <label class="field">
+            <span>Nhóm theo</span>
+            <select name="group_by">
+                <option value="day" {% if filters.group_by == 'day' %}selected{% endif %}>Ngày</option>
+                <option value="month" {% if filters.group_by == 'month' %}selected{% endif %}>Tháng</option>
+                <option value="year" {% if filters.group_by == 'year' %}selected{% endif %}>Năm</option>
+            </select>
+        </label>
+        <button class="btn btn-primary" type="submit">Lọc báo cáo</button>
+    </form>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span class="stat-label">Tổng doanh thu</span>
+        <strong>{{ report_data.summary.revenue|currency }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Số giao dịch</span>
+        <strong>{{ report_data.summary.payment_count }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Đơn đã thanh toán</span>
+        <strong>{{ report_data.summary.paid_orders }}</strong>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Hóa đơn trung bình</span>
+        <strong>{{ report_data.summary.average_bill|currency }}</strong>
+    </article>
+</section>
+
+<section class="card-grid">
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Biểu đồ</p>
+                <h3>Doanh thu theo thời gian</h3>
+            </div>
+        </div>
+
+        <div class="chart-list">
+            {% for point in report_data.chart_data %}
+                <div class="chart-row">
+                    <div class="chart-meta">
+                        <strong>{{ point.label }}</strong>
+                        <span>{{ point.revenue|currency }}</span>
+                    </div>
+                    <div class="chart-track">
+                        <span class="chart-bar" style="width: {{ point.width }}%;"></span>
+                    </div>
+                </div>
+            {% else %}
+                <p class="empty-state">Khoảng thời gian này chưa có giao dịch đã thanh toán.</p>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="section-kicker">Top sản phẩm</p>
+                <h3>Món bán chạy nhất</h3>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tên món</th>
+                        <th>Số lượng bán</th>
+                        <th>Doanh thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in report_data.top_products %}
+                        <tr>
+                            <td>{{ product.ProductName }}</td>
+                            <td>{{ product.Sold }}</td>
+                            <td>{{ product.Revenue|currency }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">Không có dữ liệu món bán chạy trong khoảng thời gian đã chọn.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

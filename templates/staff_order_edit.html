@@ -1,0 +1,42 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Sửa hoặc hủy đơn{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="section-kicker">UC4</p>
+        <h2>Sửa / Hủy đơn #{{ order.OrderID }}</h2>
+        <p class="section-copy">Điều chỉnh số lượng món, cập nhật ghi chú hoặc hủy toàn bộ đơn chưa thanh toán.</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('staff_order_detail', order_id=order.OrderID) }}">Quay lại chi tiết đơn</a>
+</section>
+
+<section class="panel-card">
+    <form method="POST" class="edit-order-list">
+        {% for item in items %}
+            <article class="edit-order-item">
+                <div>
+                    <strong>{{ item.ProductName }}</strong>
+                    <small>{{ item.Price|currency }} / món</small>
+                </div>
+                <label class="field">
+                    <span>Số lượng</span>
+                    <input type="number" min="0" name="quantity_{{ item.DetailID }}" value="{{ item.Quantity }}">
+                </label>
+                <label class="field field-grow">
+                    <span>Ghi chú</span>
+                    <input type="text" name="note_{{ item.DetailID }}" value="{{ item.Note or '' }}">
+                </label>
+            </article>
+        {% endfor %}
+
+        <div class="actions actions-wrap">
+            <button class="btn btn-primary" type="submit" name="action" value="update">Lưu thay đổi</button>
+            <button class="btn btn-danger" type="submit" name="action" value="cancel" onclick="return confirm('Bạn chắc chắn muốn hủy toàn bộ đơn này?')">
+                Hủy toàn bộ đơn
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}

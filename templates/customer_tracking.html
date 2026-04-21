@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theo dõi đơn #{{ order.OrderID }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+</head>
+<body>
+    <main class="customer-shell customer-shell-narrow">
+        <section class="customer-panel">
+            <div class="page-mini-head">
+                <div>
+                    <p class="hero-kicker">Bước 3 / 3</p>
+                    <h1>Đơn #{{ order.OrderID }}</h1>
+                    <p>{{ order.TableName }} - đặt lúc {{ order.OrderDate|datetime_vn }}</p>
+                </div>
+                <a class="btn btn-secondary" href="{{ url_for('customer_menu', table_id=order.TableID) }}">Quay lại menu</a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="toast-stack">
+                        {% for category, message in messages %}
+                            <div class="toast toast-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <article class="tracking-card">
+                <div class="tracking-status">
+                    <span>Trạng thái hiện tại</span>
+                    <strong>{{ order.Status }}</strong>
+                </div>
+                <div class="tracking-total">
+                    <span>Tổng tiền dự kiến</span>
+                    <strong>{{ order.TotalAmount|currency }}</strong>
+                </div>
+            </article>
+
+            <div class="tracking-steps">
+                <article class="tracking-step {% if order.Status in ['Chờ xác nhận', 'Đang chế biến', 'Đã hoàn thành', 'Đã thanh toán'] %}active{% endif %}">
+                    <strong>1. Chờ xác nhận</strong>
+                    <span>Quầy đã nhận yêu cầu gọi món từ website khách hàng.</span>
+                </article>
+                <article class="tracking-step {% if order.Status in ['Đang chế biến', 'Đã hoàn thành', 'Đã thanh toán'] %}active{% endif %}">
+                    <strong>2. Đang chế biến</strong>
+                    <span>Nhân viên đang xử lý món hoặc chuẩn bị phục vụ.</span>
+                </article>
+                <article class="tracking-step {% if order.Status in ['Đã hoàn thành', 'Đã thanh toán'] %}active{% endif %}">
+                    <strong>3. Hoàn thành</strong>
+                    <span>Món đã xong, khách có thể yêu cầu thanh toán nếu cần.</span>
+                </article>
+            </div>
+
+            <div class="table-wrap table-wrap-light">
+                <table class="data-table data-table-light">
+                    <thead>
+                        <tr>
+                            <th>Món</th>
+                            <th>Ghi chú</th>
+                            <th>SL</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td>{{ item.ProductName }}</td>
+                                <td>{{ item.Note or "--" }}</td>
+                                <td>{{ item.Quantity }}</td>
+                                <td>{{ item.Price|currency }}</td>
+                                <td>{{ item.LineTotal|currency }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="customer-inline-actions">
+                <form method="POST" action="{{ url_for('customer_request') }}">
+                    <input type="hidden" name="table_id" value="{{ order.TableID }}">
+                    <input type="hidden" name="action" value="support">
+                    <input type="hidden" name="redirect_to" value="{{ url_for('tracking', order_id=order.OrderID) }}">
+                    <button class="btn btn-secondary" type="submit">Cần hỗ trợ</button>
+                </form>
+                <form method="POST" action="{{ url_for('customer_request') }}">
+                    <input type="hidden" name="table_id" value="{{ order.TableID }}">
+                    <input type="hidden" name="action" value="payment">
+                    <input type="hidden" name="redirect_to" value="{{ url_for('tracking', order_id=order.OrderID) }}">
+                    <button class="btn btn-primary" type="submit">Yêu cầu thanh toán</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        setTimeout(function () {
+            if (!document.hidden) {
+                window.location.reload();
+            }
+        }, 4000);
+    </script>
+</body>
+</html>
