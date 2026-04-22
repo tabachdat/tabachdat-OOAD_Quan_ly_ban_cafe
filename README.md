@@ -14,10 +14,13 @@
 - `config.py`: Cấu hình kết nối cơ sở dữ liệu.
 
 ## 3. Cách cài đặt và chạy
-1. Tạo môi trường ảo
+1. Tạo môi trường ảo:
    Xóa file .venv khi vừa tải dự án về
    rồi tạo lại file .venv mới
 3. Kích hoạt môi trường và cài đặt thư viện:
   pip install -r requirements.txt
 4. Chạy ứng dụng:
   python app.py
+5. Chạy web của khách hàng:
+  chạy app.py sau đó nhập vào trình duyệt đường dẫn: "đường dẫn API tạo"/menu/"số bàn"
+  ví dụ: http://127.0.0.1:5000/menu/01
