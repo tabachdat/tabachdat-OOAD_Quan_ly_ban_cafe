@@ -1,5 +1,5 @@
 ﻿# OOAD_Quan_ly_ban_cafe
- Dự án quản lý quán cafe được xây dựng bằng Python (Flask) dựa trên phân tích thiết kế hệ thống hướng đối tượng (OOAD).
+ Dự án quản lý quán cafe được xây dựng bằng Python (Flask) dựa trên phân tích thiết kế hệ thống hướng đối tượng (OOAD). Đọc file "Bao_cao_he_thong_quan_ly_ban_ca_phe.pdf" để hiểu cụ thể về dự án.
 
 ## 1. Thành phần dự án
 - **Backend:** Flask (Python)
